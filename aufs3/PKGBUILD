@@ -3,7 +3,7 @@
 
 pkgname=aufs3
 pkgver=3.4_20120611
-pkgrel=1
+pkgrel=2
 
 
 # Set to whatever the tree of your aufs-friendly kernel is, and set the right dependency.
@@ -50,15 +50,15 @@ build() {
   # build, sed fixes are from gentoo portage build
   sed -i "s:aufs.ko usr/include/linux/aufs_type.h:aufs.ko:g" Makefile
   sed -i "s:__user::g" include/linux/aufs_type.h
-  ln -s "/usr/src/linux-$(</lib/modules/extramodules-${_kernver}/version)/include/linux/mount.h" fs/mount.h
-  make KDIR="/usr/src/linux-$(</lib/modules/extramodules-${_kernver}/version)"
+  ln -s "/usr/src/linux-$(</usr/lib/modules/extramodules-${_kernver}/version)/include/linux/mount.h" fs/mount.h
+  make KDIR="/usr/src/linux-$(</usr/lib/modules/extramodules-${_kernver}/version)"
 }
 
 package() {
   cd "${srcdir}/aufs3-${pkgver}"
   install -D -m644 fs/aufs/aufs.ko \
-    "${pkgdir}/lib/modules/extramodules-${_kernver}/aufs.ko"
-    #"${pkgdir}/lib/modules/${_kernver}/kernel/fs/aufs/aufs.ko"
+    "${pkgdir}/usr/lib/modules/extramodules-${_kernver}/aufs.ko"
+    #"${pkgdir}/usr/lib/modules/${_kernver}/kernel/fs/aufs/aufs.ko"
   # tweak the install script for the right kernel version
   sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" \
     "${startdir}/aufs3.install"
