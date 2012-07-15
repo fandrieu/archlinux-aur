@@ -1,0 +1,16 @@
+# vim:set ft=sh:
+
+install ()
+{
+    MODULES="aufs squashfs loop"
+    BINARIES=""
+    FILES=""
+    SCRIPT="rootaufs"
+}
+
+help ()
+{
+cat <<HELPEOF
+  This hook will enable booting from an aufs root filesystem.
+HELPEOF
+}
