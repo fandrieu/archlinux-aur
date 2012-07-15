@@ -1,0 +1,17 @@
+# vim:set ft=sh:
+
+build ()
+{
+    MODULES=""
+    BINARIES=""
+    FILES=""
+    SCRIPT="subtree"
+}
+
+help ()
+{
+cat <<HELPEOF
+  This hook will enable booting from a subtree of the root filesystem.
+  Needs "fsck" hook to check root fs.
+HELPEOF
+}

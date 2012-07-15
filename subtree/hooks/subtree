@@ -1,0 +1,96 @@
+#=====================================================================
+# TOOLS
+#=====================================================================
+
+# args: source, mountpoint
+_mnt_bind() {
+    src="${1}"
+    mnt="${2}"
+    msg "::: Binding ${src} to ${mnt}"
+    mkdir -p "${mnt}"
+    /bin/mount --bind "${src}" "${mnt}"
+}
+
+# args: source, mountpoint
+_mnt_move() {
+    src="${1}"
+    mnt="${2}"
+    msg "::: Moving ${src} to ${mnt}"
+    mkdir -p "${mnt}"
+    /bin/mount --move "${src}" "${mnt}"
+}
+
+#=====================================================================
+# HOOK
+#=====================================================================
+
+run_hook () {
+    #check if wanted
+    if [ "x${subtree}" = "x" ]; then
+        return
+    fi
+
+    # set mount handler for rootaufs
+    mount_handler="subtree_mount_handler"
+    export mount_handler
+}
+
+#=====================================================================
+# MOUNT HANDLER
+#=====================================================================
+
+subtree_mount_handler() {
+    newroot="${1}"
+    
+    if [ "${break}" = "pre" ]; then
+        msg ":: '${break}' Break requested, type 'exit' to resume operation"
+        launch_interactive_shell
+    fi
+    
+    treebase="/subtree"
+
+    #-----------------------------------
+    #mount default root to "subtree" as rw    
+    msg ":: Mounting root rw" 
+    mkdir -p "${treebase}"
+    rwopt="rw"
+    export rwopt
+    default_mount_handler "${treebase}"
+
+    
+    #-----------------------------------
+    #bind subtree to new root
+    _mnt_bind "${treebase}/${subtree}" "${newroot}"
+    
+    if [ "${break}" = "move" ]; then
+        msg ":: '${break}' Break requested, type 'exit' to resume operation"
+        launch_interactive_shell
+    fi
+
+    
+    #-----------------------------------
+    #make real root visible in new root
+    # use move or bind ?
+    #_mnt_move "${root}" "${newroot}${treebase}"
+    _mnt_bind "${treebase}" "${newroot}${treebase}"
+    /bin/umount "${treebase}"
+
+    
+    #-----------------------------------
+    #avoid root fs remount/check in rc.sysinit...    
+    if [ ! -e /run/initramfs/root-fsck ]; then
+        msg "WARNING: missing 'fsck' hook, root fs will NOT be checked"
+        msg "WARNING: please add fsck to HOOKS in mkinitcpio.conf"
+        echo 0 > /run/initramfs/root-fsck
+    fi
+    #arch FCK
+    cp /run/initramfs/root-fsck /run/initramfs/fsck-root
+    
+
+    if [ "${break}" = "post" ]; then
+        msg ":: '${break}' Break requested, type 'exit' to resume operation"
+        launch_interactive_shell
+    fi
+}
+
+# vim:ft=sh:ts=4:sw=4:et:
