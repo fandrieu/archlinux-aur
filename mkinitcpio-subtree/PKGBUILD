@@ -1,0 +1,18 @@
+pkgname='mkinitcpio-subtree'
+pkgver=1.0
+pkgrel=0
+pkgdesc='simple hook to boot from a subdir'
+url=''
+arch=('any')
+license=('BSD')
+install="${pkgname}.install"
+depends=('mkinitcpio>=0.9.0')
+source=('subtree_hook' 'subtree_install')
+
+build() {
+    install -o root -g root -D ${srcdir}/subtree_install ${pkgdir}/usr/lib/initcpio/install/subtree
+    install -o root -g root -D ${srcdir}/subtree_hook ${pkgdir}/usr/lib/initcpio/hooks/subtree
+}
+
+md5sums=('d51dad0290f0693102d7aca36b65982e'
+         '36845c5f597b396e0202d19b6aca365e')
