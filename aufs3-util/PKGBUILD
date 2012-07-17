@@ -9,7 +9,7 @@ url="http://aufs.sourceforge.net/"
 license=('GPL2')
 makedepends=('aufs3')
 replaces=('aufs2-util')
-source=("http://calimeroteknik.free.fr/src/${pkgname}-${pkgver}.tar.gz")
+source=("${pkgname}-${pkgver}.tar.gz")
 md5sums=('83ddb849d2c8674e81a7461749cc0443')
 
 build() {
