@@ -1,6 +1,23 @@
+#!/bin/bash
+
+exec > README.md
+
+cat <<"EOF"
 archlinux-aur
 =============
 
-misc arch packages
+misc arch packages:
 
-* aufs3 & linux-aufs_friendly are from calimeroteknik
+* aufs3, aufs3-utils & linux-aufs_friendly are from calimeroteknik
+* mkinitcpio-* are simple homemade hooks
+
+current versions:
+
+EOF
+
+for f in */PKGBUILD; do
+(
+	source $f
+	printf "* %-25s %s-%s\n" $pkgname $pkgver $pkgrel
+)
+done
