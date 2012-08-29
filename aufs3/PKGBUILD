@@ -2,7 +2,7 @@
 # Maintainer: Calimero <calimeroteknik@free.fr>
 
 pkgname=aufs3
-pkgver=3.4_20120730
+pkgver=3.5_20120813
 pkgrel=1
 
 
@@ -10,7 +10,7 @@ pkgrel=1
 #_kernver=${pkgver%_*}-ARCH
 #depends=('aufs_friendly')
 
-_kernver=3.4-aufs_friendly
+_kernver=${pkgver%_*}-aufs_friendly
 depends=('linux-aufs_friendly')
 
 pkgdesc="Another UnionFS implementation"
@@ -22,7 +22,7 @@ conflicts=('aufs2')
 install=aufs3.install
 source=("aufs3-${pkgver}.tar.gz")
 options=('!makeflags' '!strip')
-md5sums=('137afe529eddb8aa03b33c1c31735d16')
+md5sums=('508074626c31353d329e33cf5d438bab')
 
 build() {
   cd "${srcdir}/aufs3-${pkgver}"
