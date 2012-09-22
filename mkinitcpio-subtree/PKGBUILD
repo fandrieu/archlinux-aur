@@ -1,6 +1,6 @@
 pkgname='mkinitcpio-subtree'
 pkgver=1.0
-pkgrel=0
+pkgrel=1
 pkgdesc='simple hook to boot from a subdir'
 url='https://github.com/fandrieu/archlinux-aur/'
 arch=('any')
@@ -15,4 +15,4 @@ build() {
 }
 
 md5sums=('d51dad0290f0693102d7aca36b65982e'
-         '36845c5f597b396e0202d19b6aca365e')
+         '5cf09603e4d7d91d47875e9311bcbd4e')
