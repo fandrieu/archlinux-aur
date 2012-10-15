@@ -1,5 +1,5 @@
 #!/bin/sh
-kernel=3.5
+kernel=3.6
 gitname="aufs3-${kernel}_$(date +%Y%m%d)"
 git clone git://aufs.git.sourceforge.net/gitroot/aufs/aufs3-standalone.git "$gitname"
 cd "$gitname"

@@ -9,7 +9,7 @@ misc arch packages:
 current versions:
 
 * aufs3-util                20120412-1
-* aufs3                     3.5_20120827-1
-* linux-aufs_friendly       3.5.7-1
+* aufs3                     3.6_20121015-1
+* linux-aufs_friendly       3.6.2-1
 * mkinitcpio-rootaufs       1.2-2
 * mkinitcpio-subtree        1.0-1

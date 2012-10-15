@@ -2,7 +2,7 @@
 # Maintainer: Calimero <calimeroteknik@free.fr>
 
 pkgname=aufs3
-pkgver=3.5_20120827
+pkgver=3.6_20121015
 pkgrel=1
 
 
@@ -22,7 +22,7 @@ conflicts=('aufs2')
 install=aufs3.install
 source=("aufs3-${pkgver}.tar.gz")
 options=('!makeflags' '!strip')
-md5sums=('d3c27016e83b45fa2ba316331f545589')
+md5sums=('a2fd3be463a6b76a58ae20b444538a36')
 
 build() {
   cd "${srcdir}/aufs3-${pkgver}"
