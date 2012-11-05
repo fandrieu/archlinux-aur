@@ -10,6 +10,6 @@ current versions:
 
 * aufs3-util                20120412-1
 * aufs3                     3.6_20121015-1
-* linux-aufs_friendly       3.6.4-1
+* linux-aufs_friendly       3.6.5-1
 * mkinitcpio-rootaufs       1.2-2
 * mkinitcpio-subtree        1.0-1
