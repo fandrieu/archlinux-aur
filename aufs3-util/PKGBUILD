@@ -1,7 +1,7 @@
 # Maintainer: Calimero <calimerotekni@free.fr>
 
 pkgname=aufs3-util
-pkgver=20120412
+pkgver=20130111
 pkgrel=1
 pkgdesc="Another Unionfs Implementation that supports NFS branches"
 arch=('i686' 'x86_64')
@@ -10,7 +10,7 @@ license=('GPL2')
 makedepends=('aufs3')
 replaces=('aufs2-util')
 source=("${pkgname}-${pkgver}.tar.gz")
-md5sums=('83ddb849d2c8674e81a7461749cc0443')
+md5sums=('95bc74f506bc03fce08b99c32b0ffa51')
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
