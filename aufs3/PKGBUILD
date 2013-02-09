@@ -2,8 +2,8 @@
 # Maintainer: Calimero <calimeroteknik@free.fr>
 
 pkgname=aufs3
-pkgver=3.7_20130114
-pkgrel=2
+pkgver=3.7_20130204
+pkgrel=1
 
 
 # Set to whatever the tree of your aufs-friendly kernel is, and set the right dependency.
@@ -22,7 +22,7 @@ conflicts=('aufs2')
 install=aufs3.install
 source=("aufs3-${pkgver}.tar.gz")
 options=('!makeflags' '!strip')
-md5sums=('afebc86975f178816400519c948ea8da')
+md5sums=('8e6d0b41aa52ae30b761ec0a1b526013')
 
 build() {
   cd "${srcdir}/aufs3-${pkgver}"
