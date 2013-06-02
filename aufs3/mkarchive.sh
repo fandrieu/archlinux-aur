@@ -1,7 +1,7 @@
 #!/bin/sh
-kernel=3.8
+kernel=3.9
 gitname="aufs3-${kernel}_$(date +%Y%m%d)"
-git clone git://aufs.git.sourceforge.net/gitroot/aufs/aufs3-standalone.git "$gitname"
+git clone git://git.code.sf.net/p/aufs/aufs3-standalone "$gitname"
 cd "$gitname"
 git checkout "origin/aufs${kernel}"
 rm -rf .git

@@ -1,6 +1,6 @@
 #!/bin/sh
 gitname="aufs3-util-$(date +%Y%m%d)"
-git clone git://aufs.git.sourceforge.net/gitroot/aufs/aufs-util.git "$gitname"
+git clone git://git.code.sf.net/p/aufs/aufs-util "$gitname"
 cd "$gitname"
 git checkout origin/aufs3.0
 lastgitname="aufs3-util-$(date -d @$(git log -n1 --pretty=format:%ct) '+%Y%m%d')"
