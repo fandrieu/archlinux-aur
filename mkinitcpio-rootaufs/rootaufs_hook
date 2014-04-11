@@ -90,16 +90,24 @@ run_hook () {
         tmpfs_size="75%"
     fi
     #...
-    
+
     #load modules
-    /sbin/modprobe aufs
-    if [ $? != 0 ]; then
-        msg ":: rootaufs: Could NOT load aufs module, bailing out"
-        launch_interactive_shell
-        return
+    if [ ! -d /sys/module/aufs ]; then
+        /sbin/modprobe aufs
+        if [ $? != 0 ]; then
+            msg ":: rootaufs: Could NOT load aufs module, bailing out"
+            launch_interactive_shell
+            return
+        fi
     fi
-    /sbin/modprobe loop
-    /sbin/modprobe squashfs
+
+    if [ ! -d /sys/module/loop ]; then
+        /sbin/modprobe loop
+    fi
+
+    if [ ! -d /sys/module/squashfs ]; then
+        /sbin/modprobe squashfs
+    fi
 
     # set mount handler for rootaufs
     mount_handler="rootaufs_mount_handler"
