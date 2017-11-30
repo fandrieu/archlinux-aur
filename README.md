@@ -7,5 +7,5 @@ misc arch packages:
 
 current versions:
 
-* mkinitcpio-rootaufs       1.2-2
+* mkinitcpio-rootoverlay    1.0-1
 * mkinitcpio-subtree        1.0-1

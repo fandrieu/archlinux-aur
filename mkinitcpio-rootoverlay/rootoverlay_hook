@@ -2,21 +2,16 @@
 # TOOLS
 #=====================================================================
 
-# args: source, mountpoint
-_mnt_overlay_init() {
-    src="${1}"
-    mnt="${2}"
-    msg "::: Creating overlay mount ${src} in ${mnt}"
+# args: lowerdir(s), rwdir, mountpoint
+_mnt_overlay() {
+    lower="${1}"
+    rw="${2}"
+    mnt="${3}"
+    msg "::: Overlay mount ${lower} + ${rw} in ${mnt}"
+    mkdir -p "${rw}/upper"
+    mkdir -p "${rw}/work"
     mkdir -p "${mnt}"
-    /bin/mount -t overlay -o br:"${src}" rootoverlay "${mnt}"
-}
-
-# args: source, mountpoint
-_mnt_overlay_add() {
-    src="${1}"
-    mnt="${2}"
-    msg "::: Adding new overlay branch ${src} in ${mnt}"
-    /bin/mount -t overlay -o remount,append:"${src}" none "${mnt}"
+    /bin/mount -t overlay -o lowerdir="${lower}",upperdir="${rw}/upper",workdir="${rw}/work" rootoverlay "${mnt}"
 }
 
 # args: source, mountpoint
@@ -124,8 +119,7 @@ rootoverlay_mount_handler() {
     overlay_root="${overlay_base}root"
     overlay_rw="${overlay_base}rw"
     overlay_rwtype=""
-    #overlay: "${overlay_base}${img##*/}"    
-    
+
     #=======================================================
     # Mount filesystems
     #=======================================================
@@ -191,50 +185,54 @@ rootoverlay_mount_handler() {
     #-----------------------------------
     #mount overlays
     overlay_mnt=""
-    if [ "x${overlay}" != "x" ]; then
-        msg ":: Mounting overlays..."
-        for img in ${overlay/,/ }; do
-            mnt="${overlay_base}${img##*/}"
-            overlay_mnt="${overlay_mnt} ${mnt}"
-            src="${overlay_root}/${img#/}"
-            
-            #FIXME: copy2ram
-            if [ "${copy2rw}" = "y" ] && [ "${overlay_rwtype}" == "tmpfs" ]; then
-                src_rw="${overlay_rw}/${img##*/}"
-                msg -n "::: Copying image file to ${src_rw}..."
-                /bin/cp "${src}" "${src_rw}"
-                msg "done."
-                src="$src_rw"
-            fi
-            
-            _mnt_loop ${src} ${mnt}
-        done
+    if [ "x${overlay}" == "x" ]; then
+        overlay="/"
     fi
+    msg ":: Mounting overlays..."
+    for img in ${overlay/:/ }; do
+        if [ "${img}" == "/" ]; then
+            overlay_mnt="${overlay_mnt} ${overlay_root}"
+            continue
+        fi
+        mnt="${overlay_base}${img##*/}"
+        overlay_mnt="${overlay_mnt} ${mnt}"
+        src="${overlay_root}/${img#/}"
+
+        #FIXME: copy2ram
+        if [ "${copy2rw}" = "y" ] && [ "${overlay_rwtype}" == "tmpfs" ]; then
+            src_rw="${overlay_rw}/${img##*/}"
+            msg -n "::: Copying image file to ${src_rw}..."
+            /bin/cp "${src}" "${src_rw}"
+            msg "done."
+            src="$src_rw"
+        fi
+
+        _mnt_loop ${src} ${mnt}
+    done
     
     
     #=======================================================
     # Build overlay new root
     #=======================================================
-    msg ":: Mounting overlay..."
+    msg ":: Creating root overlay..."
 
     #-----------------------------------
-    #overlay merge: rw + overlays + ro
+    #overlay merge: root + overlays + rw
+    overlay_lower=""
+    for mnt in ${overlay_mnt}; do
+        if [ "x${overlay_lower}" != "x" ]; then
+            overlay_lower="${overlay_lower}:"
+        fi
+        overlay_lower="${overlay_lower}${mnt}"
+    done
     if [ "${break}" = "overlay" ]; then
         msg ":: '${break}' Break requested, type 'exit' to resume operation"
         launch_interactive_shell
     fi
-    _mnt_overlay_init ${overlay_rw} "${newroot}"
-    for mnt in ${overlay_mnt}; do
-        _mnt_overlay_add ${mnt} "${newroot}"
-    done
-    if [ "x${roothide}" = "x" ]; then
-        _mnt_overlay_add ${overlay_root} "${newroot}"
-    fi
-    
+    _mnt_overlay "${overlay_lower}" "${overlay_rw}" "${newroot}"
 
     #-----------------------------------
     #move overlay mount points into the live system
-    _mnt_move "${overlay_root}" "${newroot}${overlay_root}"
     if [ "${overlay_rwtype}" != "dir" ]; then
         #if rw is a dir in root: no link
         _mnt_move "${overlay_rw}" "${newroot}${overlay_rw}"
@@ -254,11 +252,12 @@ rootoverlay_mount_handler() {
     sed -e '/ \/ /d' -e '/ swap /d' -i ${newroot}/etc/fstab
     if [ "${overlay_rwtype}" == "tmpfs" ]; then
         sed -e '/ tmpfs /d' -i ${newroot}/etc/fstab
-        #FIXME...
-        echo chmod 1777 /dev/shm >> ${newroot}/etc/rc.local
+        #set journald storage
+        echo "Storage=volatile" >> ${newroot}/etc/systemd/journald.conf
+        rm -r ${newroot}/var/log/journal
     fi
 
-
+TOOD=<<ENDTODO
     #-----------------------------------
     #avoid root fs remount/check in rc.sysinit...    
     if [ ! -e /run/initramfs/root-fsck ]; then
@@ -277,6 +276,7 @@ rootoverlay_mount_handler() {
         sed -e 's/\(mount -o remount\(,ro\)* \/\)$/\1overlay\/rw/' \
             -i ${newroot}/etc/rc.sysinit
     fi
+ENDTODO
 
     #-----------------------------------
     #build remountrw

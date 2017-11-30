@@ -14,13 +14,11 @@ help() {
 This hook enables booting from an overlay root filesystem.
 It requires the "overlay" module.
 
-It's loosely based on the archiso hook, with ideas from livecds & the ubuntu hook with the same name.
+It's loosely based on the archiso hook, with ideas from livecds & the rootaufs ubuntu hook.
 
 
 SETUP
 -----
-
-- install the overlay3 module
 
 - add "fsck rootoverlay" to HOOKS in /etc/mkinitcpio.conf
 
@@ -41,18 +39,13 @@ boot options:
     *WARNING*: the FS specified here WILL be modified, so use carefully
 
 
-- overlay=path1[,path2,pathN]:
+- overlay=path1[:path2:pathN]:
     optional, allows to specfiy RO filesystems to overlay
+
+    the path "/" is interpreted as the root fs and is the default
 
     as with rootoverlay, pathX can be either a block device or disk image
     multiple paths can be specfied separated by comas, each one will be stacked under the RW file system in order (from bottom to top)
-
-
-- roothide:
-   do NOT add the real root FS at the bottom of the overlay stack
-
-   by default the boot root filesystem is added as the base of the overlay stack
-   this option prevents this behavior
 
 
 userland created at boot time:
@@ -60,7 +53,7 @@ userland created at boot time:
 - /overlay:
     this dir contains the mount points of the individual filesystems composing the root overlay:
     * the real root is mounted as "root"
-    * the RW fs is mounted as "rw"
+    * the RW fs is mounted as "rw", with the "upper" and "work" dirs
     * overlayed fs are mounted as their basename
 
 - remountr[wo]:
@@ -79,18 +72,20 @@ boot options:
 <kernel cmd> rootoverlay=/dev/sdb1
   same as above, but write to a filesystem on /dev/sdb1
 
-<kernel cmd> rootoverlay=/test/ext2.img
-  same as above, but write to a filesystem in the disk image /test/ext2.img
+<kernel cmd> rootoverlay=/test/ext4.img
+  same as above, but write to a filesystem in the disk image /test/ext4.img
 
-<kernel cmd> rootoverlay=/test/ext2.img overlay=/test/root.squash roothide
-  use the squashfs file /test/root.squash RO base, hide the real root and write to /test/ext2.img
+<kernel cmd> rootoverlay=/test/ext4.img overlay=/test/root.sqsh
+  use the squashfs file /test/root.sqsh RO base, dont use the real root and write to /test/ext4.img
   used for "persisent live cd" type setups, reducing the footprint of the root filesystem while allowing modifications to persist
 
+<kernel cmd> rootoverlay overlay=/:mods.sqsh
+  use the real root with mods.sqsh stacked on top as RO base, write to tmpfs
 
 prepare a formatted disk image:
-# truncate -s 2G /test/ext2.img
-# losetup /dev/loop0 /test/ext2.img
-# mkfs.ext2 /test/ext2.img
+# truncate -s 2G /test/ext4.img
+# losetup /dev/loop0 /test/ext4.img
+# mkfs.ext4 /test/ext4.img
 
 make a squashfs root fs (requires squashfs-tools):
 # mksquashfs /test/root.squash /mnt/arch-base
