@@ -2,7 +2,7 @@
 
 build() {
     local mod
-    for mod in aufs squashfs loop; do
+    for mod in overlay squashfs loop; do
         add_module "$mod"
     done
 
@@ -11,8 +11,8 @@ build() {
 
 help() {
     cat <<HELPEOF
-This hook enables booting from an aufs root filesystem.
-It requires the "aufs" module.
+This hook enables booting from an overlay root filesystem.
+It requires the "overlay" module.
 
 It's loosely based on the archiso hook, with ideas from livecds & the ubuntu hook with the same name.
 
@@ -20,11 +20,11 @@ It's loosely based on the archiso hook, with ideas from livecds & the ubuntu hoo
 SETUP
 -----
 
-- install the aufs3 module
+- install the overlay3 module
 
-- add "fsck rootaufs" to HOOKS in /etc/mkinitcpio.conf
+- add "fsck rootoverlay" to HOOKS in /etc/mkinitcpio.conf
 
-- setup a boot entry with the appropriate options, "rootaufs" being the minimum
+- setup a boot entry with the appropriate options, "rootoverlay" being the minimum
 
 
 USAGE
@@ -32,7 +32,7 @@ USAGE
 
 boot options:
 
-- rootaufs[=path]:
+- rootoverlay[=path]:
     required to enable the hook, allows to specify the RW filesystem
 
     by default mounts a tmpfs filesystem
@@ -44,21 +44,21 @@ boot options:
 - overlay=path1[,path2,pathN]:
     optional, allows to specfiy RO filesystems to overlay
 
-    as with rootaufs, pathX can be either a block device or disk image
+    as with rootoverlay, pathX can be either a block device or disk image
     multiple paths can be specfied separated by comas, each one will be stacked under the RW file system in order (from bottom to top)
 
 
 - roothide:
-   do NOT add the real root FS at the bottom of the aufs stack
+   do NOT add the real root FS at the bottom of the overlay stack
 
-   by default the boot root filesystem is added as the base of the aufs stack
+   by default the boot root filesystem is added as the base of the overlay stack
    this option prevents this behavior
 
 
 userland created at boot time:
 
-- /aufs:
-    this dir contains the mount points of the individual filesystems composing the root aufs:
+- /overlay:
+    this dir contains the mount points of the individual filesystems composing the root overlay:
     * the real root is mounted as "root"
     * the RW fs is mounted as "rw"
     * overlayed fs are mounted as their basename
@@ -72,17 +72,17 @@ EXAMPLES
 
 boot options:
 
-<kernel cmd> rootaufs
+<kernel cmd> rootoverlay
   use real root as RO base, add a tmpfs RW on top
   used for example to test some modifications without altering the real fs
 
-<kernel cmd> rootaufs=/dev/sdb1
+<kernel cmd> rootoverlay=/dev/sdb1
   same as above, but write to a filesystem on /dev/sdb1
 
-<kernel cmd> rootaufs=/test/ext2.img
+<kernel cmd> rootoverlay=/test/ext2.img
   same as above, but write to a filesystem in the disk image /test/ext2.img
 
-<kernel cmd> rootaufs=/test/ext2.img overlay=/test/root.squash roothide
+<kernel cmd> rootoverlay=/test/ext2.img overlay=/test/root.squash roothide
   use the squashfs file /test/root.squash RO base, hide the real root and write to /test/ext2.img
   used for "persisent live cd" type setups, reducing the footprint of the root filesystem while allowing modifications to persist
 

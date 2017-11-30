@@ -8,7 +8,6 @@ archlinux-aur
 
 misc arch packages:
 
-* aufs3, aufs3-utils & linux-aufs_friendly are from calimeroteknik
 * mkinitcpio-* are simple homemade hooks
 
 current versions:
